@@ -14,11 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br">
-      <body>
-        <div className="flex">
+      <body className="grid grid-cols-5">
           <Sidebar />
-          {children}
-        </div>
+        
+        <div className="col-span-4">{children}</div>
       </body>
     </html>
   );

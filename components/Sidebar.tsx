@@ -10,17 +10,17 @@ export const Sidebar = async () => {
   const session = await getServerSession(authOptions);
 
   return (
-    <header className="flex flex-col justify-between items-center h-screen w-64 py-4 bg-blue-900 text-slate-50">
+    <header className="flex flex-col col-span-1 justify-between items-center h-screen w-full py-4 bg-blue-600 text-slate-50">
       <nav className="w-full px-4">
         <h1 className="text-3xl font-extrabold text-slate-50">Money Flow</h1>
         <ul className="flex flex-col items-center mt-6 gap-2">
-          <li className="hover:bg-blue-950 w-full rounded-sm text-center duration-200 font-semibold">
+          <li className="hover:bg-blue-700 w-full rounded-sm text-center duration-200 font-semibold">
             <Link href="/" className="flex items-center gap-2 p-2">
               <RxDashboard size={24} />
               Dashboard
             </Link>
           </li>
-          <li className="hover:bg-blue-950 w-full rounded-sm text-center duration-200 font-semibold">
+          <li className="hover:bg-blue-700 w-full rounded-sm text-center duration-200 font-semibold">
             <Link href="/transactions" className="flex items-center gap-2 p-2">
               <BiTransferAlt size={24} />
               Transações
