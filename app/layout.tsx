@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Sidebar } from "@/components/Sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 export const metadata: Metadata = {
   title: "MoneyFlow",
@@ -14,10 +15,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br">
-      <body className="grid grid-cols-5">
-          <Sidebar />
-        
-        <div className="col-span-4">{children}</div>
+      <body>
+        <SidebarProvider>
+          <AppSidebar />
+          <main className="bg-gray-100 w-full">
+            <SidebarTrigger className="cursor-pointer"/>
+            {children}
+          </main>
+        </SidebarProvider>
       </body>
     </html>
   );

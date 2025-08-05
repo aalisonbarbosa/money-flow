@@ -51,7 +51,7 @@ export const TransactionForm = ({ category, userId }: any) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-md space-y-5"
+      className="w-80 mx-auto bg-slate-50 p-6 rounded-2xl shadow-md space-y-5"
     >
       <h2 className="text-xl font-semibold text-center text-gray-800">
         Nova Transação
@@ -69,7 +69,7 @@ export const TransactionForm = ({ category, userId }: any) => {
           id="description"
           name="description"
           required
-          className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-900"
         />
       </div>
 
@@ -85,7 +85,7 @@ export const TransactionForm = ({ category, userId }: any) => {
           id="amount"
           name="amount"
           required
-          className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-900"
         />
       </div>
 
@@ -101,7 +101,7 @@ export const TransactionForm = ({ category, userId }: any) => {
           id="date"
           name="date"
           required
-          className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-900"
         />
       </div>
 
@@ -113,7 +113,7 @@ export const TransactionForm = ({ category, userId }: any) => {
             value="income"
             checked={transactionType === "income"}
             onChange={(e) => setTransactionType(e.target.value)}
-            className="accent-blue-500"
+            className="accent-sky-900"
           />
           Entrada
         </label>
@@ -142,7 +142,7 @@ export const TransactionForm = ({ category, userId }: any) => {
           name="category"
           id="category"
           required
-          className="w-64 rounded-xl border border-gray-300 px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-64 rounded-xl border border-gray-300 px-4 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-900"
         >
           {category
             .filter((cat: any) => cat.type === transactionType)
@@ -156,7 +156,7 @@ export const TransactionForm = ({ category, userId }: any) => {
 
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition-all font-medium"
+        className="w-full bg-sky-950 text-slate-50 py-2 rounded-xl hover:bg-sky-900 transition-all font-medium cursor-pointer"
       >
         Salvar
       </button>
