@@ -3,6 +3,7 @@ import { authOptions } from "./api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { PieChartWithLegend } from "@/components/PieChartWithLegend";
 import { ChartConfig } from "@/components/ui/chart";
+import { BalanceCard } from "@/components/BalanceCard";
 
 export default async function dashboardPage() {
   const session = await getServerSession(authOptions);
@@ -27,15 +28,67 @@ export default async function dashboardPage() {
     user?.incomes.reduce((acc, ex) => acc + ex.amount, 0) ?? 0;
   const totalBalance = totalAmountIncomes - totalAmountExpenses;
 
-  const expenseByCategory = await prisma.expense.groupBy({
-    by: ["categoryId"],
-    _sum: {
-      amount: true,
-    },
+  const incomeResult = await getChartDataByTransactionType({
+    transactionType: "income",
+  });
+  const expenseResult = await getChartDataByTransactionType({
+    transactionType: "expense",
   });
 
+  return (
+    <div className="ml-7 mt-2">
+      <div className="flex flex-wrap gap-4 w-full text-slate-50">
+        <BalanceCard
+          bgColor="bg-sky-950"
+          title="Saldo Total"
+          value={totalBalance}
+        />
+        <BalanceCard
+          bgColor="bg-emerald-500"
+          title="Entradas"
+          value={totalAmountIncomes}
+        />
+        <BalanceCard
+          bgColor="bg-red-400"
+          title="Saídas"
+          value={totalAmountExpenses}
+        />
+      </div>
+      <div className="mt-4">
+        <PieChartWithLegend
+          expenseResult={expenseResult}
+          incomeResult={incomeResult}
+        />
+      </div>
+    </div>
+  );
+}
+
+type Props = {
+  transactionType: "income" | "expense";
+};
+
+async function getChartDataByTransactionType({ transactionType }: Props) {
+  let transactionByCategory;
+
+  if (transactionType === "income") {
+    transactionByCategory = await prisma.income.groupBy({
+      by: ["categoryId"],
+      _sum: {
+        amount: true,
+      },
+    });
+  } else {
+    transactionByCategory = await prisma.expense.groupBy({
+      by: ["categoryId"],
+      _sum: {
+        amount: true,
+      },
+    });
+  }
+
   const result = await Promise.all(
-    expenseByCategory.map(async (item) => {
+    transactionByCategory.map(async (item) => {
       const category = await prisma.category.findUnique({
         where: { id: item.categoryId },
       });
@@ -45,7 +98,7 @@ export default async function dashboardPage() {
         total: item._sum.amount!,
       };
     })
-  ); // deixar esse código dinâmico entre income e expense
+  );
 
   const chartData = result.map((item) => ({
     name: item.categoryName,
@@ -53,43 +106,14 @@ export default async function dashboardPage() {
   }));
 
   const categories = await Promise.all(
-    expenseByCategory.map(async (item) => {
+    transactionByCategory.map(async (item) => {
       const category = await prisma.category.findUnique({
         where: { id: item.categoryId },
       });
 
-      return category
+      return category;
     })
-  ); 
-
-  const config: ChartConfig = categories.reduce((acc, item) => {
-    if (item) {
-      acc[item.name] = { label: item.name };
-    }
-    return acc;
-  }, {} as ChartConfig);
-
-  return (
-    <div className="ml-[28px] mt-2">
-      <div className="flex flex-wrap gap-4 w-full text-slate-50">
-        <div className="bg-sky-950 rounded-lg p-4 shadow-md w-56 font-semibold">
-          <p className="text-sm font-semibold">Saldo Total</p>
-          <p className="text-2xl mt-2">R$ {totalBalance}</p>
-        </div>
-
-        <div className="bg-emerald-500 rounded-lg p-4 shadow-md w-56 font-semibold">
-          <p className="text-sm font-semibold">Entradas</p>
-          <p className="text-2xl mt-2">R$ {totalAmountIncomes}</p>
-        </div>
-
-        <div className="bg-red-400 rounded-lg p-4 shadow-md w-56 font-semibold">
-          <p className="text-sm font-semibold">Saídas</p>
-          <p className="text-2xl mt-2">R$ {totalAmountExpenses}</p>
-        </div>
-      </div>
-      <div>
-        <PieChartWithLegend data={chartData} config={config}/>
-      </div>
-    </div>
   );
+
+  return { chartData, categories };
 }
