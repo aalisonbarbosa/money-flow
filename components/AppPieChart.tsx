@@ -6,6 +6,8 @@ import {
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useState } from "react";
 import { Pie, PieChart } from "recharts";
@@ -22,7 +24,7 @@ interface propsData {
   } | null)[];
 }
 
-export const PieChartWithLegend = ({
+export const AppPieChart = ({
   incomeResult,
   expenseResult,
 }: {
@@ -52,8 +54,6 @@ export const PieChartWithLegend = ({
     }
   }
 
-  console.log(data, categories);
-
   const colors = generateColors(data.length);
 
   const dataWithColors = data.map((item, index) => ({
@@ -69,37 +69,41 @@ export const PieChartWithLegend = ({
   }, {} as ChartConfig);
 
   return (
-    <Card className="flex flex-col w-96">
-      <CardHeader className="flex justify-between items-center pb-0">
-        <CardTitle>Visão Geral</CardTitle>
-        <div>
-          <select
-            name="transactionType"
-            id="transactionType"
-            onChange={handler}
-            value={transactionType}
-            className="rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-sky-900"
-          >
-            <option value="income">Entrada</option>
-            <option value="expense">Saída</option>
-          </select>
-        </div>
+    <Card className="h-full shadow-sm rounded-xl">
+      <CardHeader className="flex justify-between items-center pb-2">
+        <CardTitle className="text-lg font-semibold text-gray-800">
+          Visão Geral
+        </CardTitle>
+        <select
+          name="transactionType"
+          id="transactionType"
+          onChange={handler}
+          value={transactionType}
+          className="rounded-md px-3 py-2 text-sm border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
+        >
+          <option value="income">Entrada</option>
+          <option value="expense">Saída</option>
+        </select>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="h-[400px] flex items-center justify-center">
         <ChartContainer
           config={config}
-          className="mx-auto aspect-square max-h-[300px]"
+          className="w-[300px] min h-full"
         >
           <PieChart>
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
             <Pie
               data={dataWithColors}
               dataKey="value"
               nameKey="name"
-              minAngle={5}
+              minAngle={10}
             />
             <ChartLegend
               content={<ChartLegendContent nameKey="name" />}
-              className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
+              className="flex flex-wrap"
             />
           </PieChart>
         </ChartContainer>

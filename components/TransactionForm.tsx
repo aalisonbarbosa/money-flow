@@ -33,7 +33,7 @@ export const TransactionForm = ({ category, userId }: any) => {
       }
     } else {
       try {
-        const response = await fetch("/api/expense", {
+        fetch("/api/expense", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -156,7 +156,7 @@ export const TransactionForm = ({ category, userId }: any) => {
 
       <button
         type="submit"
-        className="w-full bg-sky-950 text-slate-50 py-2 rounded-xl hover:bg-sky-900 transition-all font-medium cursor-pointer"
+        className="w-full bg-sky-950 text-slate-50 py-2 rounded-xl hover:bg-sky-900 transition-all font-medium cursor-pointer duration-200"
       >
         Salvar
       </button>
