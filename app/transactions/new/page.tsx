@@ -13,7 +13,7 @@ export default async function transactionNewPage() {
 
   const categories = await prisma.category.findMany();
 
-  return <div className="flex justify-between items-center h-[calc(100%-29px)]">
+  return <div className="flex justify-center items-center h-[calc(100vh-32px)]">
     <TransactionForm category={categories} userId={session.user.id} />
   </div>;
 }

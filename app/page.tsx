@@ -1,15 +1,24 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
-import { PieChartWithLegend } from "@/components/PieChartWithLegend";
-import { ChartConfig } from "@/components/ui/chart";
+import { AppPieChart } from "@/components/AppPieChart";
 import { BalanceCard } from "@/components/BalanceCard";
+import { getBarChartData } from "@/lib/chart/getBarChartData";
+import { AppBarChart } from "@/components/AppBarChart";
+import { generateChartDataByTransactionType } from "@/lib/chart/getPieChart";
 
 export default async function dashboardPage() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return <div>Você precisa estar logado</div>;
+    return (
+      <div className="flex flex-col items-center justify-center px-4 text-center h-[calc(100vh-32px)]">
+        <h1 className="text-3xl font-bold text-foreground">Acesso restrito</h1>
+        <p className="mt-2 text-muted-foreground">
+          Você precisa estar logado para acessar esta página.
+        </p>
+      </div>
+    );
   }
 
   const user = await prisma.user.findUnique({
@@ -28,16 +37,18 @@ export default async function dashboardPage() {
     user?.incomes.reduce((acc, ex) => acc + ex.amount, 0) ?? 0;
   const totalBalance = totalAmountIncomes - totalAmountExpenses;
 
-  const incomeResult = await getChartDataByTransactionType({
+  const incomeResult = await generateChartDataByTransactionType({
     transactionType: "income",
   });
-  const expenseResult = await getChartDataByTransactionType({
+  const expenseResult = await generateChartDataByTransactionType({
     transactionType: "expense",
   });
 
+  const barChartData = await getBarChartData();
+
   return (
-    <div className="ml-7 mt-2">
-      <div className="flex flex-wrap gap-4 w-full text-slate-50">
+    <>
+      <div className="grid grid-cols-3 md:flex flex-wrap gap-4 w-full text-slate-50">
         <BalanceCard
           bgColor="bg-sky-950"
           title="Saldo Total"
@@ -54,66 +65,17 @@ export default async function dashboardPage() {
           value={totalAmountExpenses}
         />
       </div>
-      <div className="mt-4">
-        <PieChartWithLegend
-          expenseResult={expenseResult}
-          incomeResult={incomeResult}
-        />
+      <div className="flex flex-col lg:flex-row md:flex-wrap gap-4 mt-4">
+        <div className="flex-1">
+          <AppPieChart
+            expenseResult={expenseResult}
+            incomeResult={incomeResult}
+          />
+        </div>
+         <div className="flex-1">
+          <AppBarChart data={barChartData} />
+        </div>
       </div>
-    </div>
+    </>
   );
-}
-
-type Props = {
-  transactionType: "income" | "expense";
-};
-
-async function getChartDataByTransactionType({ transactionType }: Props) {
-  let transactionByCategory;
-
-  if (transactionType === "income") {
-    transactionByCategory = await prisma.income.groupBy({
-      by: ["categoryId"],
-      _sum: {
-        amount: true,
-      },
-    });
-  } else {
-    transactionByCategory = await prisma.expense.groupBy({
-      by: ["categoryId"],
-      _sum: {
-        amount: true,
-      },
-    });
-  }
-
-  const result = await Promise.all(
-    transactionByCategory.map(async (item) => {
-      const category = await prisma.category.findUnique({
-        where: { id: item.categoryId },
-      });
-
-      return {
-        categoryName: category?.name || "Sem categoria",
-        total: item._sum.amount!,
-      };
-    })
-  );
-
-  const chartData = result.map((item) => ({
-    name: item.categoryName,
-    value: item.total,
-  }));
-
-  const categories = await Promise.all(
-    transactionByCategory.map(async (item) => {
-      const category = await prisma.category.findUnique({
-        where: { id: item.categoryId },
-      });
-
-      return category;
-    })
-  );
-
-  return { chartData, categories };
 }
