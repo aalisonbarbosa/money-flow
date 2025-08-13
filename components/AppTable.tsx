@@ -1,29 +1,29 @@
+import { Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "./ui/table";
 import { prisma } from "@/lib/prisma";
 
-interface Transaction {
-  id: string;
-  userId: string;
-  amount: number;
-  description: string;
-  date: Date;
-  categoryId: string;
-  type: string;
+interface AppTableProps {
+  transactions: {
+    id: string;
+    userId: string;
+    amount: number;
+    description: string;
+    date: Date;
+    categoryId: string;
+    type: string;
+  }[];
 }
 
 export const AppTable = async ({
   transactions,
-}: {
-  transactions: Transaction[];
-}) => {
+}: AppTableProps ) => {
   const categories = await prisma.category.findMany();
 
   return (
@@ -35,6 +35,7 @@ export const AppTable = async ({
           <TableHead>Data</TableHead>
           <TableHead className="text-right">Categoria</TableHead>
           <TableHead className="text-right">Tipo</TableHead>
+          <TableHead></TableHead>
         </TableRow>
       </TableHeader>
 
@@ -47,8 +48,8 @@ export const AppTable = async ({
             <TableCell
               className={
                 transaction.type === "income"
-                  ? "text-green-600 font-semibold"
-                  : "text-red-600 font-semibold"
+                  ? "text-emerald-500 font-semibold"
+                  : "text-red-400 font-semibold"
               }
             >
               {transaction.amount.toLocaleString("pt-BR", {
@@ -69,11 +70,16 @@ export const AppTable = async ({
             <TableCell
               className={
                 transaction.type === "income"
-                  ? "text-esmeral-500 text-right"
+                  ? "text-emerald-500 text-right"
                   : "text-red-400 text-right"
               }
             >
               {transaction.type === "income" ? "Entrada" : "Saída"}
+            </TableCell>
+            <TableCell className="flex justify-end pr-4">
+              <button className="cursor-pointer">
+                <Trash2 />
+              </button>
             </TableCell>
           </TableRow>
         ))}

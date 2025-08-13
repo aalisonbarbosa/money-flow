@@ -3,49 +3,100 @@
 import { redirect } from "next/navigation";
 import { useState } from "react";
 
-export const TransactionForm = ({ category, userId }: any) => {
+interface TransactionFormProps {
+  category: {
+    name: string;
+    id: string;
+    type: string;
+  }[];
+  userId: string;
+}
+
+export const TransactionForm = ({ category, userId }: TransactionFormProps) => {
   const [transactionType, setTransactionType] = useState("income");
+  const [errors, setErrors] = useState<string[]>([]); 
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    const validationErrors: string[] = [];
+
     const formData = new FormData(e.currentTarget);
 
-    const data = {
-      description: formData.get("description"),
-      amount: parseFloat(formData.get("amount") as string),
-      date: formData.get("date"),
-      categoryId: formData.get("category"),
-      userId,
-    };
+    const description = formData.get("description");
+    const amountRaw = formData.get("amount");
+    const dateRaw = formData.get("date");
+    const categoryId = formData.get("category");
 
-    if (transactionType === "income") {
-      try {
-        const response = await fetch("/api/income", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-      } catch (error) {
-        console.error("Erro ao criar entrada:", error);
-      }
+    if (
+      !description ||
+      typeof description !== "string" ||
+      description.trim() === ""
+    ) {
+      validationErrors.push("A descrição é obrigatória.");
+    }
+
+    if (
+      !amountRaw ||
+      typeof amountRaw !== "string" ||
+      amountRaw.trim() === ""
+    ) {
+      validationErrors.push("O valor é obrigatório.");
+    }
+
+    const amount = parseFloat(amountRaw as string);
+    if (isNaN(amount) || amount <= 0) {
+      validationErrors.push("Informe um valor válido maior que zero.");
+    }
+
+    if (!dateRaw || typeof dateRaw !== "string" || dateRaw.trim() === "") {
+      validationErrors.push("A data é obrigatória.");
     } else {
-      try {
-        fetch("/api/expense", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-      } catch (error) {
-        console.error("Erro ao criar despesa:", error);
+      const date = new Date(dateRaw as string);
+      if (isNaN(date.getTime())) {
+        validationErrors.push("Informe uma data válida.");
       }
     }
 
-    redirect("/transactions");
+    if (
+      !categoryId ||
+      typeof categoryId !== "string" ||
+      categoryId.trim() === ""
+    ) {
+      validationErrors.push("A categoria é obrigatória.");
+    }
+
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    const data = {
+      description,
+      amount,
+      date: new Date(dateRaw as string),
+      categoryId,
+      userId,
+      type: transactionType,
+    };
+
+    try {
+      const response = await fetch("/api/transaction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        setErrors(["Erro ao criar entrada no banco de dados."]);
+      }
+    } catch (error) {
+      setErrors(["Erro ao conectar com o servidor."]);
+    }
+
+    if (errors.length === 0) redirect("/transactions");
   }
 
   return (
@@ -56,6 +107,16 @@ export const TransactionForm = ({ category, userId }: any) => {
       <h2 className="text-xl font-semibold text-center text-gray-800">
         Nova Transação
       </h2>
+
+      {errors.length > 0 && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <ul className="list-disc list-inside">
+            {errors.map((err, i) => (
+              <li key={i}>{err}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="space-y-1">
         <label

@@ -2,36 +2,26 @@ import { prisma } from "../prisma";
 
 type Props = {
   transactionType: "income" | "expense";
+  userId: string;
 };
 
-export async function generateChartDataByTransactionType({ transactionType }: Props) {
-  let transactionByCategory;
-
-  if (transactionType === "income") {
-    transactionByCategory = await prisma.income.groupBy({
-      by: ["categoryId"],
-      _sum: {
-        amount: true,
-      },
-    });
-  } else {
-    transactionByCategory = await prisma.expense.groupBy({
-      by: ["categoryId"],
-      _sum: {
-        amount: true,
-      },
-    });
-  }
+export async function generateChartDataByTransactionType({ transactionType, userId }: Props) {
+  let transactions = await prisma.transaction.findMany({
+    where: {
+      userId,
+      type: transactionType
+    }
+  })
 
   const result = await Promise.all(
-    transactionByCategory.map(async (item) => {
+    transactions.map(async (item) => {
       const category = await prisma.category.findUnique({
         where: { id: item.categoryId },
       });
 
       return {
         categoryName: category?.name || "Sem categoria",
-        total: item._sum.amount!,
+        total: item.amount!,
       };
     })
   );
@@ -42,7 +32,7 @@ export async function generateChartDataByTransactionType({ transactionType }: Pr
   }));
 
   const categories = await Promise.all(
-    transactionByCategory.map(async (item) => {
+    transactions.map(async (item) => {
       const category = await prisma.category.findUnique({
         where: { id: item.categoryId },
       });

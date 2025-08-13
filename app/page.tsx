@@ -26,22 +26,27 @@ export default async function dashboardPage() {
       id: session?.user.id,
     },
     include: {
-      expenses: true,
-      incomes: true,
+      transactions: true,
     },
   });
 
   const totalAmountExpenses =
-    user?.expenses.reduce((acc, ex) => acc + ex.amount, 0) ?? 0;
+    user?.transactions
+      .filter((transaction) => transaction.type === "expense")
+      .reduce((acc, ex) => acc + ex.amount, 0) ?? 0;
   const totalAmountIncomes =
-    user?.incomes.reduce((acc, ex) => acc + ex.amount, 0) ?? 0;
+    user?.transactions
+      .filter((transaction) => transaction.type === "income")
+      .reduce((acc, ex) => acc + ex.amount, 0) ?? 0;
   const totalBalance = totalAmountIncomes - totalAmountExpenses;
 
   const incomeResult = await generateChartDataByTransactionType({
     transactionType: "income",
+    userId: user?.id!,
   });
   const expenseResult = await generateChartDataByTransactionType({
     transactionType: "expense",
+    userId: user?.id!,
   });
 
   const barChartData = await getBarChartData();
@@ -72,7 +77,7 @@ export default async function dashboardPage() {
             incomeResult={incomeResult}
           />
         </div>
-         <div className="flex-1">
+        <div className="flex-1">
           <AppBarChart data={barChartData} />
         </div>
       </div>

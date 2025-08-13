@@ -1,12 +1,7 @@
 "use client";
 
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import {
   ChartConfig,
   ChartContainer,
@@ -14,7 +9,11 @@ import {
   ChartTooltipContent,
 } from "./ui/chart";
 
-export const AppBarChart = ({ data }: { data: any[] }) => {
+interface AppBarChartProps {
+  data: { month: string; income: number; expense: number }[];
+}
+
+export const AppBarChart = ({ data }: AppBarChartProps) => {
   const chartConfig = {
     income: {
       label: "Entrada",
