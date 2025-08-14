@@ -46,7 +46,16 @@ export async function getBarChartData() {
 
   const allMonths = Array.from(
     new Set([...Object.keys(groupedIncomes), ...Object.keys(groupedExpenses)])
-  ).sort();
+  ).sort((a, b) => {
+    const [monthA, yearA] = a.split("/").map(Number);
+    const [monthB, yearB] = b.split("/").map(Number);
+
+    if (yearA !== yearB) {
+      return yearA - yearB;
+    }
+
+    return monthA - monthB;
+  });
 
   const chartData = allMonths.map((month) => ({
     month,
