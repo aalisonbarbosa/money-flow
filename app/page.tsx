@@ -30,6 +30,20 @@ export default async function dashboardPage() {
     },
   });
 
+  if (user?.transactions.length === 0) {
+    return (
+      <div>
+        <p className="text-lg font-medium mb-2">
+          Nenhuma transação encontrada.
+        </p>
+        <p className="text-sm">
+          Comece criando sua primeira transação para acompanhar seus gastos e
+          entradas.
+        </p>
+      </div>
+    );
+  }
+
   const totalAmountExpenses =
     user?.transactions
       .filter((transaction) => transaction.type === "expense")

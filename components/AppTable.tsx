@@ -1,4 +1,3 @@
-import { Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -8,6 +7,8 @@ import {
   TableRow,
 } from "./ui/table";
 import { prisma } from "@/lib/prisma";
+import { Trash2 } from "lucide-react";
+import { removeTransaction } from "@/app/actions/transactionActions";
 
 interface AppTableProps {
   transactions: {
@@ -21,9 +22,7 @@ interface AppTableProps {
   }[];
 }
 
-export const AppTable = async ({
-  transactions,
-}: AppTableProps ) => {
+export const AppTable = async ({ transactions }: AppTableProps) => {
   const categories = await prisma.category.findMany();
 
   return (
@@ -77,9 +76,16 @@ export const AppTable = async ({
               {transaction.type === "income" ? "Entrada" : "Saída"}
             </TableCell>
             <TableCell className="flex justify-end pr-4">
-              <button className="cursor-pointer">
-                <Trash2 />
-              </button>
+              <form action={removeTransaction}>
+                <input
+                  type="hidden"
+                  name="transactionId"
+                  value={transaction.id}
+                />
+                <button className="cursor-pointer">
+                  <Trash2 />
+                </button>
+              </form>
             </TableCell>
           </TableRow>
         ))}

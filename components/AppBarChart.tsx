@@ -37,9 +37,6 @@ export const AppBarChart = ({ chartData }: AppBarChartProps) => {
     setData(dataByYear);
   }
 
-  console.table(years);
-  console.table(chartData);
-
   const chartConfig = {
     income: {
       label: "Entrada",
@@ -57,19 +54,21 @@ export const AppBarChart = ({ chartData }: AppBarChartProps) => {
         <CardTitle className="text-lg font-semibold text-gray-800">
           Entradas vs Saídas
         </CardTitle>
-        <select
-          name="years"
-          id="years"
-          onChange={handler}
-          value={selectedYear}
-          className="rounded-md px-3 py-2 text-sm border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
-        >
-          {years.map((year) => (
-            <option value={year} key={year}>
-              {year}
-            </option>
-          ))}
-        </select>
+        {years.length > 0 && (
+          <select
+            name="years"
+            id="years"
+            onChange={handler}
+            value={selectedYear}
+            className="rounded-md px-3 py-2 text-sm border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          >
+            {years.map((year) => (
+              <option value={year} key={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        )}
       </CardHeader>
       <CardContent className="h-[400px] flex items-center justify-center">
         <ChartContainer config={chartConfig} className="w-full h-full">
