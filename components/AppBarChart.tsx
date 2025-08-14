@@ -8,12 +8,38 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "./ui/chart";
+import { useState } from "react";
 
 interface AppBarChartProps {
-  data: { month: string; income: number; expense: number }[];
+  chartData: { month: string; income: number; expense: number }[];
 }
 
-export const AppBarChart = ({ data }: AppBarChartProps) => {
+export const AppBarChart = ({ chartData }: AppBarChartProps) => {
+  const years = [
+    ...new Set(
+      chartData.map((data) => {
+        return data.month.split("/")[1];
+      })
+    ),
+  ];
+
+  const [selectedYear, setSelectedYear] = useState(years[0]);
+  let dataByYear = chartData.filter(
+    (item) => item.month.split("/")[1] === selectedYear
+  );
+  const [data, setData] = useState(dataByYear);
+
+  function handler(e: React.ChangeEvent<HTMLSelectElement>) {
+    const value = e.target.value;
+    setSelectedYear(value);
+
+    dataByYear = chartData.filter((item) => item.month.split("/")[1] === value);
+    setData(dataByYear);
+  }
+
+  console.table(years);
+  console.table(chartData);
+
   const chartConfig = {
     income: {
       label: "Entrada",
@@ -27,10 +53,23 @@ export const AppBarChart = ({ data }: AppBarChartProps) => {
 
   return (
     <Card className="h-full shadow-sm border border-gray-200 rounded-xl">
-      <CardHeader>
+      <CardHeader className="flex items-center justify-between">
         <CardTitle className="text-lg font-semibold text-gray-800">
           Entradas vs Saídas
         </CardTitle>
+        <select
+          name="years"
+          id="years"
+          onChange={handler}
+          value={selectedYear}
+          className="rounded-md px-3 py-2 text-sm border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
+        >
+          {years.map((year) => (
+            <option value={year} key={year}>
+              {year}
+            </option>
+          ))}
+        </select>
       </CardHeader>
       <CardContent className="h-[400px] flex items-center justify-center">
         <ChartContainer config={chartConfig} className="w-full h-full">

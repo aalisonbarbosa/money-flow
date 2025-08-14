@@ -78,7 +78,7 @@ export default async function dashboardPage() {
           />
         </div>
         <div className="flex-1">
-          <AppBarChart data={barChartData} />
+          <AppBarChart chartData={barChartData} />
         </div>
       </div>
     </>
