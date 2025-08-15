@@ -5,8 +5,13 @@ import Link from "next/link";
 import { AppTable } from "@/components/AppTable";
 import { prisma } from "@/lib/prisma";
 
-export default async function transactionPage() {
+export default async function transactionPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
   const session = await getServerSession(authOptions);
+  const page = Number(searchParams.page) || 1;
 
   if (!session) {
     redirect("/");
@@ -19,7 +24,7 @@ export default async function transactionPage() {
   });
 
   return (
-    <div className="flex flex-col gap-6 min-h-[calc(100vh-32px)]">
+    <div className="flex flex-col gap-6 h-[calc(100vh-48px)] overflow-y-hidden">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Transações</h1>
         <Link
@@ -41,7 +46,7 @@ export default async function transactionPage() {
         </div>
       ) : (
         <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
-          <AppTable transactions={transactions} />
+          <AppTable page={page} />
         </div>
       )}
     </div>

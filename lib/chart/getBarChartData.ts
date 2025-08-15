@@ -1,9 +1,10 @@
 import { prisma } from "../prisma";
 import { format } from "date-fns";
 
-export async function getIncomeExpenseByMonth() {
+export async function getIncomeExpenseByMonth(userId: string) {
   const incomes = await prisma.transaction.findMany({
     where: {
+      userId,
       type: "income"
     },
     select: {
@@ -14,6 +15,7 @@ export async function getIncomeExpenseByMonth() {
 
   const expenses = await prisma.transaction.findMany({
     where: {
+      userId,
       type: "expense"
     }, select: {
       amount: true,
@@ -38,8 +40,8 @@ function groupByMonth(data: { amount: number; date: Date }[]) {
   return grouped;
 }
 
-export async function getBarChartData() {
-  const { incomes, expenses } = await getIncomeExpenseByMonth();
+export async function getBarChartData(userId: string) {
+  const { incomes, expenses } = await getIncomeExpenseByMonth(userId);
 
   const groupedIncomes = groupByMonth(incomes);
   const groupedExpenses = groupByMonth(expenses);

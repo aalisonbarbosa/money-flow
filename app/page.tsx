@@ -63,7 +63,7 @@ export default async function dashboardPage() {
     userId: user?.id!,
   });
 
-  const barChartData = await getBarChartData();
+  const barChartData = await getBarChartData(user?.id!);
 
   return (
     <>

@@ -20,7 +20,7 @@ export default function RootLayout({
           <AppSidebar />
           <main className="bg-gray-100 w-full p-6">
             <SidebarTrigger className="cursor-pointer md:hidden" />
-            <div className="mx-4 md:mt-4">{children}</div>
+           {children}
           </main>
         </SidebarProvider>
       </body>
