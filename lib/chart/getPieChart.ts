@@ -6,7 +6,7 @@ type Props = {
 };
 
 export async function generateChartDataByTransactionType({ transactionType, userId }: Props) {
-  let transactions = await prisma.transaction.findMany({
+  const transactions = await prisma.transaction.findMany({
     where: {
       userId,
       type: transactionType

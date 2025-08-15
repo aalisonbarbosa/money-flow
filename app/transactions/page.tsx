@@ -1,17 +1,13 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { AppTable } from "@/components/AppTable";
 import { prisma } from "@/lib/prisma";
 
-export default async function transactionPage({
-  searchParams,
-}: {
-  searchParams: { page?: string };
-}) {
+export default async function transactionPage({ searchParams }: any) {
   const session = await getServerSession(authOptions);
-  const page = Number(searchParams.page) || 1;
+  const page = Number(searchParams?.page ?? 1);
 
   if (!session) {
     redirect("/");
