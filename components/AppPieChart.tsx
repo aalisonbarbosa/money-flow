@@ -31,9 +31,19 @@ export const AppPieChart = ({
   incomeResult: propsData;
   expenseResult: propsData;
 }) => {
-  const [transactionType, setTransactionType] = useState("income");
-  const [categories, setCategories] = useState(incomeResult.categories);
-  const [data, setData] = useState(incomeResult.chartData);
+  const [transactionType, setTransactionType] = useState(
+    incomeResult.chartData.length > 0 ? "income" : "expense"
+  );
+  const [categories, setCategories] = useState(
+    incomeResult.categories.length > 0
+      ? incomeResult.categories
+      : expenseResult.categories
+  );
+  const [data, setData] = useState(
+    incomeResult.chartData.length > 0
+      ? incomeResult.chartData
+      : expenseResult.chartData
+  );
 
   function handler(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;
@@ -86,10 +96,7 @@ export const AppPieChart = ({
         </select>
       </CardHeader>
       <CardContent className="h-[400px] flex items-center justify-center">
-        <ChartContainer
-          config={config}
-          className="w-[300px] min h-full"
-        >
+        <ChartContainer config={config} className="w-[300px] min h-full">
           <PieChart>
             <ChartTooltip
               cursor={false}

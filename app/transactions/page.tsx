@@ -7,12 +7,13 @@ import { prisma } from "@/lib/prisma";
 
 export default async function transactionPage({ searchParams }: any) {
   const session = await getServerSession(authOptions);
-  const page = Number(searchParams?.page ?? 1);
 
   if (!session) {
     redirect("/");
   }
 
+  const page = Number(searchParams?.page ?? 1);
+  
   const transactions = await prisma.transaction.findMany({
     where: {
       userId: session.user.id,
