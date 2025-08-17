@@ -12,8 +12,10 @@ export default async function transactionPage({ searchParams }: any) {
     redirect("/");
   }
 
-  const page = Number(searchParams?.page ?? 1);
-  
+  const params = await searchParams;
+
+  const page = Number(params?.page ?? 1);
+
   const transactions = await prisma.transaction.findMany({
     where: {
       userId: session.user.id,

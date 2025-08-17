@@ -39,8 +39,8 @@ export const AppTable = async ({ page, pageSize = 5 }: AppTableProps) => {
             <TableHead className="w-[200px]">Descrição</TableHead>
             <TableHead>Valor</TableHead>
             <TableHead>Data</TableHead>
-            <TableHead className="text-right">Categoria</TableHead>
-            <TableHead className="text-right">Tipo</TableHead>
+            <TableHead className="text-right max-sm:hidden">Categoria</TableHead>
+            <TableHead className="text-right max-sm:hidden">Tipo</TableHead>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>
@@ -66,15 +66,15 @@ export const AppTable = async ({ page, pageSize = 5 }: AppTableProps) => {
               <TableCell>
                 {new Date(transaction.date).toLocaleDateString("pt-BR")}
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="text-right max-sm:hidden">
                 {categories.find((c) => c.id === transaction.categoryId)?.name}
               </TableCell>
               <TableCell
-                className={
+                className={`${
                   transaction.type === "income"
                     ? "text-emerald-500 text-right"
                     : "text-red-400 text-right"
-                }
+                } max-sm:hidden`}
               >
                 {transaction.type === "income" ? "Entrada" : "Saída"}
               </TableCell>
