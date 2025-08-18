@@ -8,7 +8,7 @@ export const BalanceCard = ({ bgColor, title, value }: BalanceCardProps) => {
   return (
     <div className={`${bgColor} rounded-lg p-4 shadow-md lg:w-56 font-semibold`}>
       <p className="text-sm font-semibold">{title}</p>
-      <p className="md:text-2xl text-lg mt-2">
+      <p className="text-sm md:text-2xl mt-2">
         {value.toLocaleString("pt-br", {
           style: "currency",
           currency: "BRL",

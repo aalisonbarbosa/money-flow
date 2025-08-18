@@ -26,11 +26,15 @@ export async function generateChartDataByTransactionType({ transactionType, user
     })
   );
 
-  const chartData = result.map((item) => ({
-    name: item.categoryName,
-    value: item.total,
-  }));
+  const grouped = result.reduce((acc, item) => {
+    acc[item.categoryName] = (acc[item.categoryName] || 0) + item.total;
+    return acc;
+  }, {} as Record<string, number>);
 
+  const chartData = Object.entries(grouped).map(([name, value]) => ({
+    name,
+    value,
+  }));
   const categories = await Promise.all(
     transactions.map(async (item) => {
       const category = await prisma.category.findUnique({
