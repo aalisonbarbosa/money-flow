@@ -67,7 +67,7 @@ export default async function dashboardPage() {
 
   return (
     <>
-      <div className="grid grid-cols-3 md:flex flex-wrap gap-4 w-full text-slate-50">
+      <div className="flex max-sm:flex-col sm:justify-between gap-4 w-full md:w-3/5 text-slate-50">
         <BalanceCard
           bgColor="bg-sky-950"
           title="Saldo Total"
