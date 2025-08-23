@@ -45,7 +45,7 @@ export default async function transactionPage({ searchParams }: any) {
         </div>
       ) : (
         <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
-          <AppTable page={page} />
+          <AppTable userId={session.user.id} page={page} />
         </div>
       )}
     </div>

@@ -12,20 +12,32 @@ import { removeTransaction } from "@/app/actions/transactionActions";
 import Link from "next/link";
 
 interface AppTableProps {
+  userId: string;
   page: number;
   pageSize?: number;
 }
 
-export const AppTable = async ({ page, pageSize = 5 }: AppTableProps) => {
+export const AppTable = async ({
+  userId,
+  page,
+  pageSize = 5,
+}: AppTableProps) => {
   const skip = (page - 1) * pageSize;
 
   const [transactions, totalCount, categories] = await Promise.all([
     prisma.transaction.findMany({
+      where: {
+        userId,
+      },
       skip,
       take: pageSize,
       orderBy: { date: "desc" },
     }),
-    prisma.transaction.count(),
+    prisma.transaction.count({
+      where: {
+        userId,
+      },
+    }),
     prisma.category.findMany(),
   ]);
 
@@ -39,7 +51,9 @@ export const AppTable = async ({ page, pageSize = 5 }: AppTableProps) => {
             <TableHead className="w-[200px]">Descrição</TableHead>
             <TableHead>Valor</TableHead>
             <TableHead>Data</TableHead>
-            <TableHead className="text-right max-sm:hidden">Categoria</TableHead>
+            <TableHead className="text-right max-sm:hidden">
+              Categoria
+            </TableHead>
             <TableHead className="text-right max-sm:hidden">Tipo</TableHead>
             <TableHead></TableHead>
           </TableRow>
